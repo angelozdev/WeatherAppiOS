@@ -8,13 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var vm = WeekViewModel()
+    @StateObject private var vm = WeekViewModel()
+    @State private var isNight: Bool = true
 
-    private let backgroundGradient: Gradient =
+    private var backgroundGradient: Gradient {
         Gradient(colors:
-            [Color("LightBlue"),
-             Color(hue: 0.6, saturation: 0.6, brightness: 0.6)]
+            [
+                isNight ? .gray : Color("LightBlue"),
+                Color(isNight ? .black : .blue),
+            ]
         )
+    }
 
     var body: some View {
         ZStack {
@@ -23,39 +27,35 @@ struct ContentView: View {
                            endPoint: .bottomTrailing)
                 .edgesIgnoringSafeArea(.all)
 
-            ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 20) {
                 VStack(spacing: 20) {
-                    VStack(spacing: 5) {
-                        Text("Bogotá - Colombia")
-                            .font(.largeTitle)
-                            .foregroundStyle(.white)
+                    Text("Bogotá - Colombia")
+                        .font(.largeTitle)
+                        .foregroundStyle(.white)
 
-                        Image(systemName: "cloud.sun.fill")
-                            .renderingMode(.original)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 100, height: 100)
+                    Image(systemName: isNight ? "moon.stars.fill" : "cloud.sun.fill")
+                        .renderingMode(.original)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
 
-                        Text("18°")
-                            .font(.system(size: 70, weight: .medium))
-                            .foregroundStyle(.white)
-                    }
-
-                    WeekView(days: vm.days)
-
-                    VStack {
-                        Button {
-                            print("Hola mundo")
-                        } label: {
-                            Text("Change day time")
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity - 10)
-                        .padding(10)
-                        .background(.white)
-                        .cornerRadius(8)
-                    }.padding(.horizontal)
+                    Text("18°")
+                        .font(.system(size: 70, weight: .medium))
+                        .foregroundStyle(.white)
                 }
+
+                WeekView(days: vm.days)
+
+                VStack {
+                    Button { isNight.toggle() } label: {
+                        Text("Change time to \(isNight ? "Day" : "Night")")
+                            .font(.headline)
+                    }
+                    .padding(10)
+                    .frame(maxWidth: .infinity)
+                    .background(.white)
+                    .cornerRadius(8)
+                }.padding(.horizontal)
             }
         }
     }
